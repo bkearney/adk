@@ -40,7 +40,7 @@ class ADK
   
   def list_appliances
     Appliance.all_appliances().each() do |appl|
-      puts("#{appl.name} (#{appl.kickstart})")
+      puts("#{appl.name}=> ram:#{appl.memory}, cpus: #{appl.cpus}, ks:#{appl.kickstart} ")
     end
   end
   
@@ -64,7 +64,7 @@ class ADK
   end
   def add_build_tasks(appl) 
     file virt_metadata_path(appl) => [kickstart_path(appl), :force, Adk::Config.output_directory] do |task|
-      run_command("appliance-creator --name #{appl.name} --config #{appl.kickstart} --cache #{Adk::Config.cache_directory}")
+      run_command("appliance-creator --name #{appl.name} --config #{appl.kickstart} --vmem #{appl.memory} --vcpu #{appl.cpus} --cache #{Adk::Config.cache_directory}")
     end    
     task :build => virt_metadata_path(appl) 
     Rake.application.top_level_tasks << :build 
