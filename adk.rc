@@ -5,3 +5,7 @@ export ADK_HOME=/home/bkearney/src/adk
 export PATH=$PWD/bin:/home/bkearney/src/act/tools:$PATH
 export PYTHONPATH=/home/bkearney/src/act/
 export RUBYLIB=$PWD/lib
+
+# Also need the most recent livecd-tools
+export PATH=/home/bkearney/code/livecd/tools:$PATH
+export PYTHONPATH=/home/bkearney/code/livecd:$PYTHONPATH
