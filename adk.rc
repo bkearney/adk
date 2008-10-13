@@ -1,0 +1,7 @@
+# Need this for the adk config file
+export ADK_HOME=/home/bkearney/src/adk
+
+# This gets me the most curren appliance creator and ec2-converter
+export PATH=$PWD/bin:/home/bkearney/src/act/tools:$PATH
+export PYTHONPATH=/home/bkearney/src/act/
+export RUBYLIB=$PWD/lib

@@ -1,0 +1,114 @@
+#!/usr/bin/ruby
+#
+#  Copyright (C) 2008 Red Hat Inc.
+#  
+#  This library is free software; you can redistribute it and/or
+#  modify it under the terms of the GNU Lesser General Public
+#  License as published by the Free Software Foundation; either
+#  version 2.1 of the License, or (at your option) any later version.
+#  
+#  This library is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+#  Lesser General Public License for more details.
+#  
+#  You should have received a copy of the GNU Lesser General Public
+#  License along with this library; if not, write to the Free Software
+#  Foundation, Inc., 59 Temple Pladk, Suite 330, Boston, MA 02111-1307  USA
+#
+# Author: Bryan Kearney <bkearney@redhat.com>
+require "adk"
+require "getoptlong"
+
+def usage
+  puts("Build Usage: adk OPTIONS ACTION applianceName")
+  puts("  Where ACTION is:")
+  puts("    build the initial appliance")
+  puts("    ec2 the appliance to ec2")  
+  puts("  Where OPTIONS is:")
+  puts("    --debug    Turn on debug level logging")
+  puts("    --verbose  Turn on verbose level logging")
+	puts("    --force    Disable dependency checking")
+	puts("    --help     Call for Help")
+  puts("")
+  puts("Query Usage: adk list ITEM")
+  puts("  Where ITEM is:")
+  puts("    appliances ")   
+end
+
+options = [
+    [ "--debug",     		"-d",      GetoptLong::NO_ARGUMENT ],
+    [ "--help",     		"-h",      GetoptLong::NO_ARGUMENT ],          
+    [ "--verbose",     	"-v",      GetoptLong::NO_ARGUMENT ],
+    [ "--force",     		"-f",      GetoptLong::NO_ARGUMENT ],
+]
+
+debug = false
+verbose = false
+force = false ;
+
+# Add all of the config parameters as valid options
+# Store them off
+result = GetoptLong.new(*options)
+
+begin
+  result.each{ |opt, arg|
+    case opt
+      when '--debug'
+        debug = true
+      when '--verbose'
+        verbose = true           
+      when '--force'
+        force = true   
+      when '--help'
+        usage
+        exit(0)     
+    end 
+  }
+rescue GetoptLong::InvalidOption => detail
+    $stderr.puts "Invalid parameter!"
+  usage    
+    exit(1)
+rescue GetoptLong::MissingArgument => detail
+  usage    
+    exit(1)    
+end
+
+if ARGV.length < 2 
+  puts "Incorrect number of arguments. Execute adk --help for usage"
+  exit(1)
+end
+
+# Make sure we are root
+if  Process.uid != 0 then
+  puts "You must be root to execute this script"
+  exit(1)
+end
+
+adk = ADK.new(force)
+adk.verbose(verbose)
+adk.trace(debug)
+
+action=ARGV.shift
+modifier=ARGV.shift
+
+case action
+  when 'build'
+    adk.build_appliance(modifier)
+  when 'ec2'
+		if ARGV.length != 1 
+		  puts "ec2 requires a bucket name"
+		  exit(1)
+		end
+		bucket = ARGV.shift
+  	adk.ec2_bundle(modifier, bucket)
+  when 'list'
+    if (modifier == "appliances")
+      adk.list_appliances()       
+    else 
+      puts "You can only list appliances"
+      exit(1)
+    end
+	else
+		puts("What you talking about")       
+end
