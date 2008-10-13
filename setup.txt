@@ -1,0 +1,10 @@
+- yum install rubygem-rake
+- pull down the latest ace and act repositories
+- pull down the latest livecd-tools (git clone git://git.fedorahosted.org/hosted/livecd
+)
+- Put the files in the attached archive some place (ADK_HOME)
+- edit the adk.rc file for some envriroment variables
+- edit the adk.yml file for more settings
+- su to root
+- change to the ADK_HOME directory
+- . ./adk.rc 
