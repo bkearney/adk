@@ -9,18 +9,25 @@ require "adk/force_task"
 class ADK
   include Adk::Util
   
+  attr_accessor :trace, :verbose
+  
   def initialize(force = false)
     Rake.application.init('adk')
     Rake.application.top_level_tasks.clear()  
     add_common_tasks(force)
+    @verbose = false
+    @trace = true
   end
   
   def verbose(value)
-    Rake.application.do_option("--verbose", true) if value     
+    Rake.application.do_option("--verbose", true) if value
+    @verbose = value
   end
   
   def trace(value)
-    Rake.application.do_option("--trace", true) if value     
+    Rake.application.do_option("--trace", true) if value
+    @verbose = true if value
+    @trace = value
   end  
     
   def build_appliance(name)
