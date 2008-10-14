@@ -23,8 +23,9 @@ require "getoptlong"
 def usage
   puts("Build Usage: adk OPTIONS ACTION applianceName")
   puts("  Where ACTION is:")
-  puts("    build the initial appliance")
-  puts("    ec2 the appliance to ec2")  
+  puts("    build - Contruct the initial appliance")
+  puts("    ec2   - Push the appliance to Amazon's ec2")
+  puts("    vmx   - Create a vmx version of the appliance")
   puts("  Where OPTIONS is:")
   puts("    --debug    Turn on debug level logging")
   puts("    --verbose  Turn on verbose level logging")
@@ -102,6 +103,8 @@ case action
 		end
 		bucket = ARGV.shift
   	adk.ec2_bundle(modifier, bucket)
+  when 'vmx'
+  	adk.vmx_convert(modifier)  	
   when 'list'
     if (modifier == "appliances")
       adk.list_appliances()       

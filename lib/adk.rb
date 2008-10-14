@@ -38,6 +38,14 @@ class ADK
     Rake.application.top_level()   
   end
   
+  def vmx_convert(name)
+    appl = get_appliance(name)        
+    puts("converting appliance #{name} to vmx")
+    add_build_tasks(appl)
+    add_vmx_tasks(appl)
+    Rake.application.top_level()   
+  end  
+  
   def list_appliances
     Appliance.all_appliances().each() do |appl|
       puts("#{appl.name} (#{appl.kickstart})")
@@ -62,6 +70,7 @@ class ADK
       task.force=force
     end    
   end
+  
   def add_build_tasks(appl) 
     file virt_metadata_path(appl) => [kickstart_path(appl), :force, Adk::Config.output_directory] do |task|
       run_command("appliance-creator --name #{appl.name} --config #{appl.kickstart} --cache #{Adk::Config.cache_directory}")
@@ -83,6 +92,14 @@ class ADK
     task :ec2_bundle =>  "upload_#{appl.name}".to_sym 
     Rake.application.top_level_tasks << :ec2_bundle   
   end  
+  
+  def add_vmx_tasks(appl)
+    file vmx_path(appl) => [virt_metadata_path(appl), :force] do |task|
+      run_command("virt-convert -i virt-image -o vmx #{virt_metadata_path(appl)} #{vmx_path(appl)}")
+    end
+    task :vmx =>  vmx_path(appl)
+    Rake.application.top_level_tasks << :vmx   
+  end    
   
   #convenience functions
   def get_appliance(name)
@@ -115,5 +132,9 @@ class ADK
   
   def ec2_manifest_path(appl)
     "#{ec2_image_path(appl) }.manifest.xml"    
+  end
+  
+  def vmx_path(appl)
+    File.join(Adk::Config.output_directory, "#{appl.name}.vmx")
   end
 end
