@@ -3,11 +3,18 @@ class Appliance
   
   @@cache = Hash.new() 
   attr_accessor :name, 
-                :kickstart
+                :kickstart,
+                :memory,
+                :cpus
                
-  def initialize(name, kickstart) 
+  def initialize(name, hash) 
     self.name = name
-    self.kickstart = kickstart
+    self.memory = 256
+    self.cpus = 1
+    hash.each_pair do |key, value|
+      mthd = "#{key}=".to_sym
+      self.send(mthd, value)
+    end
   end
   
   
@@ -24,7 +31,7 @@ class Appliance
   end
 end
 
-Adk::Config.appliances.each do |key, value| 
+Adk::Config.appliances.each do |key, value|
   Appliance.add_appliance(Appliance.new(key,value))
 end
 
