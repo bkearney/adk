@@ -89,7 +89,7 @@ class ADK
   
   def add_ec2_tasks(appl, bucket)
     file ec2_image_path(appl) => [virt_metadata_path(appl), :force] do |task|
-      run_command("ec2-converter -f #{virt_image_path(appl)} -n #{ec2_image_path_short(appl)} --inputtype diskimage")
+      run_command("ec2-converter -f #{virt_image_path(appl)} -n #{ec2_image_path(appl)} --inputtype diskimage")
     end
     file ec2_manifest_path(appl) => [ec2_image_path(appl), :force] do |task|
       run_command("ec2-bundle-image -i #{ec2_image_path(appl)} -c #{Adk::Config.aws_cert} -k #{Adk::Config.aws_private_key} -u #{Adk::Config.aws_account_number}  -r i386 -d .")
@@ -135,12 +135,8 @@ class ADK
     File.join(Adk::Config.output_directory, "#{appl.name}-sda.raw")    
   end
   
-  def ec2_image_path_short(appl) 
-    File.join(Adk::Config.output_directory, "#{appl.name}-ec2")
-  end 
-  
   def ec2_image_path(appl) 
-    ec2_image_path_short(appl)+".img"
+    File.join(Adk::Config.output_directory, "#{appl.name}-ec2.img")
   end 
   
   def ec2_manifest_path(appl)
