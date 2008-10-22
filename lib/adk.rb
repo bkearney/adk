@@ -59,9 +59,9 @@ class ADK
     end
   end
   
-  def run_command(cmd)
+  def run_command(cmd, directory=Adk::Config.output_directory)
     puts (cmd)    
-    output, status = clean_exec(cmd, Adk::Config.output_directory)
+    output, status = clean_exec(cmd, directory)
     if (status != 0)
       puts ("FAIL!")
       puts(output)
@@ -80,6 +80,7 @@ class ADK
   
   def add_build_tasks(appl) 
     file virt_metadata_path(appl) => [kickstart_path(appl), :force, Adk::Config.output_directory] do |task|
+      kickstart_location = File.dirname(appl.kickstart)
       run_command("appliance-creator --name #{appl.name} --config #{appl.kickstart} --vmem #{appl.memory} --vcpu #{appl.cpus} --cache #{Adk::Config.cache_directory}")
     end    
     task :build => virt_metadata_path(appl) 
@@ -112,13 +113,18 @@ class ADK
   def get_appliance(name)
     appl = Appliance.get_appliance(name)
     if appl.nil?
-      puts("No Appliance named #{name} FAIL!!!")
+      puts("No Appliance named #{name}")
+     exit(1)
     end
     appl
   end  
   
   def kickstart_path(appl)
     appl.kickstart()
+  end
+  
+  def virt_name(appl)
+    File.join(Adk::Config.output_directory, "#{appl.name}")
   end
     
   def virt_metadata_path(appl) 

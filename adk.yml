@@ -8,14 +8,14 @@ aws_secret_key: "YsAv0G5pNQDQjYCKdCWxCjwfEg/TdDxrax8azuDd"
 aws_account_number: "037935454564"
 appliances:
     base:
-        kickstart: "/home/bkearney/src/ace/resources/jboxx.ks"
-        memory: "1024"
+        kickstart: "/home/bkearney/src/ace/resources/baseAppliance-f9.ks"
+        memory: "512"
         cpus: "1"  
     ec2:
         kickstart: "/home/bkearney/src/ace/resources/ec2Appliance-f9.ks"
         memory: 256
         cpus: 1
     jboxx:
-        kickstart: "/home/bkearney/src/ace/resources/jboxx.ks"
+        kickstart: "/home/bkearney/src/acex/jboxx/resources/jboxx.ks"
         memory: "1024"
         cpus: "1"  
