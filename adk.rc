@@ -1,7 +1,7 @@
 # Need this for the adk config file
 export ADK_HOME=$PWD
 export PATH=$ADK_HOME/bin:$PATH
-export RUBYLIB=$ADK_HOME/lib
+export RUBYLIB=$ADK_HOME/lib:$ADK_HOME/deps/cobbler/contrib/ruby/lib
 
 # For the msot recent appliance creator and ec2-converter
 export PATH=$ADK_HOME/deps/act/tools:$PATH

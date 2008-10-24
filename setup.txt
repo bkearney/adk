@@ -1,6 +1,7 @@
 - yum install rubygem-rake git hg
 - change to the ADK_HOME directory
 - rake setup
+- copy adk.yml.example ot adk.yml
 - edit the adk.yml file for more settings
 - su to root
 - change to the ADK_HOME directory

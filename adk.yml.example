@@ -1,0 +1,26 @@
+output_directory: "/some/path/appliances"
+log_directory: "/some/path/appliances/logs"
+cache_directory: "/some/path"
+aws_private_key: "/some/path/pk-XXXX.pem"
+aws_cert: "/some/path/cert-XXXXX.pem"
+aws_key: "XXXXX" 
+aws_secret_key: "XXXX"
+aws_account_number: "793739183721"
+appliances:
+    base:
+        kickstart: "/some/path/src/ace/resources/baseAppliance-f9.ks"
+        memory: "512"
+        cpus: "1"  
+    ec2:
+        kickstart: "/some/path/src/ace/resources/ec2Appliance-f9.ks"
+        memory: 256
+        cpus: 1
+    jboxx:
+        kickstart: "/some/path/src/acex/jboxx/resources/jboxx.ks"
+        memory: "1024"
+        cpus: "1"  
+
+# The following is for cobbler integration
+cobbler_hostname: localhost
+cobbler_user: testing
+cobbler_password: testing
