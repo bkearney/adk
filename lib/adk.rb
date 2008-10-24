@@ -81,7 +81,7 @@ class ADK
   def add_build_tasks(appl) 
     file virt_metadata_path(appl) => [kickstart_path(appl), :force, Adk::Config.output_directory] do |task|
       kickstart_location = File.dirname(appl.kickstart)
-      run_command("appliance-creator --name #{appl.name} --config #{appl.kickstart} --vmem #{appl.memory} --vcpu #{appl.cpus} --cache #{Adk::Config.cache_directory}")
+      run_command("appliance-creator --generate-checksum --name #{appl.name} --config #{appl.kickstart} --vmem #{appl.memory} --vcpu #{appl.cpus} --cache #{Adk::Config.cache_directory}")
     end    
     task :build => virt_metadata_path(appl) 
     Rake.application.top_level_tasks << :build 
