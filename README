@@ -1,0 +1,33 @@
+This is some initial thinking around an appliance development kit.
+It is very rudimentary, and requires checkouts of the latest
+bits to function. But.. it is good enough to be criticized.
+
+SETUP
+=====
+* yum install rubygem-rake git hg
+* Install the ami tools from http://developer.amazonwebservices.com/connect/entry.jspa?externalID=368
+* change to the ADK_HOME directory
+* rake setup
+* copy adk.yml.example ot adk.yml
+* edit the adk.yml file for more settings
+* su to root
+* change to the ADK_HOME directory
+* . ./adk.rc
+
+
+RUNNING
+=======
+Now you can run it. Some things you can do:
+ 
+adk build [APPLIANCE] : Builds the appliance
+adk ec2 [APPLIANCE] [BUCKET] : Takes the output of build, and bundles it as an AMI, and pushes it to S3
+adk vmx [APPLIANCE] : Takes the output of the build, and converts it to a vmware appliance.
+adk cobbler [APPLIANCE] : Takes the output of build, and puhes it as an image into cobbler
+
+
+NOTES / GOTCHAS
+===============
+* The cobbler integration is pending a patch being commited in the ruby bindings. It will fail now.
+* After you run ec2, you will need to register the manifest to create the AMI. 
+* The tool uses make to do dependency management. So, it will not rebuild the image if the kickstart file
+  is unchanged. If you change the underlieing rpms you will need to use the --fo

@@ -23,9 +23,10 @@ require "getoptlong"
 def usage
   puts("Build Usage: adk OPTIONS ACTION applianceName")
   puts("  Where ACTION is:")
-  puts("    build - Contruct the initial appliance")
-  puts("    ec2   - Push the appliance to Amazon's ec2")
-  puts("    vmx   - Create a vmx version of the appliance")
+  puts("    build     - Contruct the initial appliance")
+  puts("    ec2       - Push the appliance to Amazon's ec2")
+  puts("    vmx       - Create a vmx version of the appliance")
+  puts("    cobbler   - Push an image to cobbler for provisioning")  
   puts("  Where OPTIONS is:")
   puts("    --debug    Turn on debug level logging")
   puts("    --verbose  Turn on verbose level logging")
@@ -105,6 +106,8 @@ case action
   	adk.ec2_bundle(modifier, bucket)
   when 'vmx'
   	adk.vmx_convert(modifier)  	
+  when 'cobbler'
+  	adk.cobbler_deploy(modifier)  	  	
   when 'list'
     if (modifier == "appliances")
       adk.list_appliances()       

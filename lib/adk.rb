@@ -5,6 +5,7 @@ require "adk/config"
 require "adk/appliance"
 require "adk/util"
 require "adk/force_task"
+require "cobbler"
 
 class ADK
   include Adk::Util
@@ -53,6 +54,14 @@ class ADK
     Rake.application.top_level()   
   end  
   
+  def cobbler_deploy(name)
+    appl = get_appliance(name)
+    puts("pushing appliance #{name} to cobbler")
+    add_build_tasks(appl)    
+    add_cobbler_tasks(appl)
+    Rake.application.top_level()       
+  end
+  
   def list_appliances
     Appliance.all_appliances().each() do |appl|
       puts("#{appl.name}=> ram:#{appl.memory}, cpus: #{appl.cpus}, ks:#{appl.kickstart} ")
@@ -88,7 +97,7 @@ class ADK
   end
   
   def add_ec2_tasks(appl, bucket)
-    file ec2_image_path(appl) => [virt_metadata_path(appl), :force] do |task|
+    file ec2_image_path(appl) => [:build, :force] do |task|
       run_command("ec2-converter -f #{virt_image_path(appl)} -n #{ec2_image_path(appl)} --inputtype diskimage")
     end
     file ec2_manifest_path(appl) => [ec2_image_path(appl), :force] do |task|
@@ -102,12 +111,28 @@ class ADK
   end  
   
   def add_vmx_tasks(appl)
-    file vmx_path(appl) => [virt_metadata_path(appl), :force] do |task|
+    file vmx_path(appl) => [:build, :force] do |task|
       run_command("virt-convert -i virt-image -o vmx #{virt_metadata_path(appl)} #{vmx_path(appl)}")
     end
     task :vmx =>  vmx_path(appl)
     Rake.application.top_level_tasks << :vmx   
   end    
+  
+  def add_cobbler_tasks(appl)
+    task :cobbler =>  [:build, :force] do 
+      Cobbler::Base.hostname = Adk::Config.cobbler_hostname
+      Cobbler::Base.username = Adk::Config.cobbler_user
+      Cobbler::Base.password = Adk::Config.cobbler_password    
+      img = Cobbler::Image.new("name" => appl.name, 
+                                "virt_ram" => appl.memory, 
+                                "virt_cpus" => appl.cpus,
+                                "imagetype" => "RAW",
+                                "file" => virt_image_path(appl))
+      
+      img.save()
+    end
+    Rake.application.top_level_tasks << :cobbler   
+  end      
   
   #convenience functions
   def get_appliance(name)
@@ -131,6 +156,7 @@ class ADK
     File.join(Adk::Config.output_directory, "#{appl.name}.xml")
   end
   
+  #TODO Need to support mroe then one file
   def virt_image_path(appl)
     File.join(Adk::Config.output_directory, "#{appl.name}-sda.raw")    
   end
