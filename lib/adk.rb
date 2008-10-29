@@ -10,7 +10,7 @@ require "cobbler"
 class ADK
   include Adk::Util
   
-  attr_accessor :trace, :verbose
+  attr_accessor :trace, :verbose, :logfile
   
   def initialize(force = false)
     Rake.application.init('adk')
@@ -30,36 +30,57 @@ class ADK
     @verbose = true if value
     @trace = value
   end  
+  
+  def init_logfile(command, appliance)
+    @logfile = File.join(Adk::Config.log_directory, "#{appliance}-#{command}-#{Time.now.to_f}.log")
+    File.open(@logfile, "a") do |f|
+        f.write("Exectuing command #{command} for appliance #{appliance} at #{Time.now}\n")
+    end
+  end
+  
+  def end_run(command, appliance)
+    File.open(@logfile, "a") do |f|
+        f.write("End at #{Time.now}\n")
+    end  
+  end
     
   def build_appliance(name)
+    init_logfile("build", name)
     appl = get_appliance(name)    
     puts("building #{name}")
-    add_build_tasks(appl)         
-    Rake.application.top_level()      
+    add_build_tasks(appl)    
+    Rake.application.top_level()  
+    end_run("build", name)    
   end
   
   def ec2_bundle(name, bucket)
+    init_logfile("ec2", name)    
     appl = get_appliance(name)        
     puts("converting appliance #{name} to run on Amazons EC2")
     add_build_tasks(appl)
     add_ec2_tasks(appl, bucket)
     Rake.application.top_level()   
+    end_run("ec2", name)        
   end
   
   def vmx_convert(name)
+    init_logfile("vmx", name)    
     appl = get_appliance(name)        
     puts("converting appliance #{name} to vmx")
     add_build_tasks(appl)
     add_vmx_tasks(appl)
     Rake.application.top_level()   
+    end_run("vmx", name)    
   end  
   
   def cobbler_deploy(name)
+    init_logfile("cobbler", name)    
     appl = get_appliance(name)
     puts("pushing appliance #{name} to cobbler")
     add_build_tasks(appl)    
     add_cobbler_tasks(appl)
-    Rake.application.top_level()       
+    Rake.application.top_level()   
+    end_run("cobbler", name)     
   end
   
   def list_appliances
@@ -75,6 +96,12 @@ class ADK
       puts ("FAIL!")
       puts(output)
     end   
+    File.open(@logfile, 'a') do |f| 
+        f.write(cmd)
+        output.gsub!("\n\r", "\n")
+        output.gsub!("\r", "\n")
+        f.write(output)
+    end
   end
   
   # Rake file creation
@@ -85,6 +112,8 @@ class ADK
     force_task :force do |task|
       task.force=force
     end    
+    Rake.application.top_level_tasks << Adk::Config.output_directory  
+    Rake.application.top_level_tasks << Adk::Config.log_directory      
   end
   
   def add_build_tasks(appl) 
