@@ -21,12 +21,12 @@ class ADK
   end
   
   def verbose(value)
-    Rake.application.do_option("--verbose", true) if value
+    Rake.application.options.verbose = true 
     @verbose = value
   end
   
   def trace(value)
-    Rake.application.do_option("--trace", true) if value
+    Rake.application.options.trace = true     
     @verbose = true if value
     @trace = value
   end  

@@ -10,5 +10,9 @@ task :setup do |task|
     system("git clone git://git.fedorahosted.org/hosted/livecd")    
     system("hg clone http://hg.et.redhat.com/virt/applications/virtinst--devel")
     system("git clone git://git.fedorahosted.org/cobbler --depth 2")
+    Dir.chdir("cobbler") do
+        system("git branch --track  devel origin/devel")
+	system("git checkout devel")
+    end
   end
 end

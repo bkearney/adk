@@ -14,3 +14,8 @@ export PYTHONPATH=$ADK_HOME/deps/livecd:$PYTHONPATH
 # for the most recent virt-convert code
 export PATH=$ADK_HOME/deps/virtinst--devel:$PATH
 export PYTHONPATH=$ADK_HOME/deps/virtinst--devel:$PYTHONPATH
+
+# The following is for cobbler integration
+cobbler_hostname: localhost
+cobbler_user: testing
+cobbler_password: testing

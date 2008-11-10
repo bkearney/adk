@@ -19,8 +19,3 @@ appliances:
         kickstart: "/some/path/src/acex/jboxx/resources/jboxx.ks"
         memory: "1024"
         cpus: "1"  
-
-# The following is for cobbler integration
-cobbler_hostname: localhost
-cobbler_user: testing
-cobbler_password: testing
